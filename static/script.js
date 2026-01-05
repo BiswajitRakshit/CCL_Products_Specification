@@ -3578,3 +3578,4 @@ document.addEventListener('click', (e) => {
         closeItemPriceManager();
     }
 });
+
