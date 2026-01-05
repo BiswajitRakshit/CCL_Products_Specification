@@ -13,7 +13,7 @@ from datetime import timedelta
 from waitress import serve
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))  # ✅ Use env variable in production
+app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))  # Use env variable in production
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = False  # Set True if using HTTPS
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
@@ -346,7 +346,7 @@ def change_password():
         return jsonify({'message': 'Password changed successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-# Add these new routes after the change_password route
+
 
 @app.route('/api/change-username', methods=['POST'])
 @login_required
@@ -380,10 +380,6 @@ def change_username():
         users[new_username] = users.pop(current_username)
         save_users(users)
         
-        # Update subject mapping
-        # if current_username in user_subjects:
-        #     user_subjects[new_username] = user_subjects.pop(current_username)
-        
         return jsonify({
             'message': 'Username changed successfully',
             'new_username': new_username
@@ -396,8 +392,7 @@ def change_username():
 def get_user_profile():
     """Get current user profile info"""
     try:
-        # In a real app, you'd get this from session/token
-        # For now, we'll just return available usernames for admin purposes
+        # we'll just return available usernames for admin purposes
         users = load_users()
         return jsonify({
             'users': list(users.keys())
@@ -558,7 +553,7 @@ def delete_experiment(exp_id):
         return jsonify({'error': str(e)}), 500
 
 # ==================== ITEM ROUTES ====================
-# Replace the add_item route
+
 @app.route('/api/experiments/<exp_id>/items', methods=['POST'])
 @login_required
 def add_item(exp_id):
@@ -887,7 +882,8 @@ def get_user_allowed_subject(username):
 if __name__ == '__main__':
     serve(
         app,
-        host="0.0.0.0",   # LAN access
+        host="0.0.0.0", 
         port=5000,
-        threads=4         # Safe default
+        threads=4         
+
     )
