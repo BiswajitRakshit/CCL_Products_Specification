@@ -357,7 +357,7 @@ async function initializeApp() {
                         subjectFilter.value = loginState.selectedSubject;
                     }
                     // Disable subject filter for non-admin users
-                    if (loginState.username !== 'admin') {
+                    if (loginState.allowedSubject !== 'All') {
                         subjectFilter.disabled = true;
                         subjectFilter.style.cursor = 'not-allowed';
                         subjectFilter.style.opacity = '0.6';
@@ -528,6 +528,7 @@ function handleLogout() {
 }
 
 
+// Replace the loadCategories function
 async function loadCategories() {
     try {
         const response = await authenticatedFetch('/api/categories');
@@ -766,6 +767,7 @@ function filterCategoriesDatalist(searchText, subjectFilter = null) {
 
 
 // ==================== FILTER FUNCTIONS ====================
+// Replace applyFilters
 function applyFilters() {
     // Initialize with empty array if experiments not loaded yet
     let filtered = state.experiments || [];
@@ -1566,6 +1568,7 @@ function truncateText(text, maxLength = 35) {
     return text.substring(0, maxLength) + '...';
 }
 
+// Replace the renderExperiments function
 function renderExperiments() {
     const container = document.getElementById('experiments-list');
     
@@ -3158,6 +3161,7 @@ async function handleChangeUsername(event) {
         showError(error.message || 'Failed to change username');
     }
 }
+// Replace your showAccountSettingsModal function in script.js with this fixed version:
 
 function showAccountSettingsModal() {
     const modal = document.getElementById('accountSettingsModal');
@@ -3574,5 +3578,3 @@ document.addEventListener('click', (e) => {
         closeItemPriceManager();
     }
 });
-
-
