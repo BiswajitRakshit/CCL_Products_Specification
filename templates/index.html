@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Cost Estimator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- Create Account Modal (Admin Only) -->
+    <div id="createAccountModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>👤 Create New Account</h2>
+                <div class="modal-actions-topright">
+                    <button class="icon-btn-cancel" onclick="closeModal('createAccountModal')" title="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-content">
+                <form id="createAccountForm" onsubmit="handleCreateAccount(event)">
+                    <div class="form-group">
+                        <label for="createAccountUsername">Username</label>
+                        <input type="text" id="createAccountUsername" required autocomplete="off" 
+                            minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]{3,20}">
+                        <small style="color: #666; font-size: 0.85em;">3-20 characters: letters, numbers, underscore only</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="createAccountPassword">Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="createAccountPassword" required autocomplete="new-password" 
+                                style="padding-right: 40px;" minlength="6">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('createAccountPassword', 'toggleCreatePasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleCreatePasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <small style="color: #666; font-size: 0.85em;">Minimum 6 characters</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="createAccountConfirmPassword">Confirm Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="createAccountConfirmPassword" required autocomplete="new-password" 
+                                style="padding-right: 40px;" minlength="6">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('createAccountConfirmPassword', 'toggleCreateConfirmPasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleCreateConfirmPasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="createAccountSubject">Assign Subject</label>
+                        <select id="createAccountSubject" required>
+                            <option value="">Select Subject</option>
+                            <option value="All">All (Admin Access)</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Biology">Biology</option>
+                        </select>
+                        <small style="color: #666; font-size: 0.85em;">User will only access this subject</small>
+                    </div>
+                    <div style="background: #e3f2fd; border: 1px solid #2196F3; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+                        <strong style="color: #1565c0;">ℹ️ Note:</strong>
+                        <p style="margin: 5px 0 0 0; color: #1565c0; font-size: 0.9em;">
+                            The new user will be able to view and edit experiments only in their assigned subject.
+                        </p>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" style="justify-content: center;">
+                        <i class="bi bi-person-plus"></i> Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Account Settings Modal -->
+    <div id="accountSettingsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>⚙️ Account Settings</h2>
+                <div class="modal-actions-topright">
+                    <button class="icon-btn-cancel" onclick="closeModal('accountSettingsModal')" title="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-content">
+                <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 10px 0; color: #667eea;">Current Account Info</h3>
+                    <div style="display: grid; gap: 8px;">
+                        <div><strong>Username:</strong> <span id="settingsCurrentUser"></span></div>
+                        <div><strong>Subject:</strong> <span id="settingsCurrentSubject"></span></div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; gap: 15px;">
+                    <button class="btn btn-primary w-100" 
+                            onclick="closeModal('accountSettingsModal'); showChangeUsernameModal();" 
+                            style="justify-content: center;">
+                        <i class="bi bi-person-badge"></i> Change Username
+                    </button>
+                    
+                    <button class="btn btn-primary" 
+                            onclick="closeModal('accountSettingsModal'); showChangePasswordModal();" 
+                            style="justify-content: center;">
+                        <i class="bi bi-key"></i> Change Password
+                    </button>
+                    
+                    <!-- Admin Only: Create New Account -->
+                    <!-- ✅ Make sure this button has id="createAccountBtn" -->
+                    <button id="createAccountBtn" 
+                            class="btn btn-primary" 
+                            onclick="closeModal('accountSettingsModal'); showCreateAccountModal();" 
+                            style="justify-content: center; background: #10b981; display: none;">
+                        <i class="bi bi-person-plus"></i> Create New Account (Admin Only)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Change Username Modal -->
+    <div id="changeUsernameModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>👤 Change Username</h2>
+                <div class="modal-actions-topright">
+                    <button class="icon-btn-cancel" onclick="closeModal('changeUsernameModal')" title="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-content">
+                <form id="changeUsernameForm" onsubmit="handleChangeUsername(event)">
+                    <div class="form-group">
+                        <label for="changeUsernameCurrentUsername">Current Username</label>
+                        <input type="text" id="changeUsernameCurrentUsername" required readonly style="background: #f5f5f5; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label for="changeUsernamePassword">Password (for verification)</label>
+                        <div style="position: relative;">
+                            <input type="password" id="changeUsernamePassword" required autocomplete="current-password" style="padding-right: 40px;">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('changeUsernamePassword', 'toggleUsernamePasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleUsernamePasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="changeUsernameNewUsername">New Username</label>
+                        <input type="text" id="changeUsernameNewUsername" required autocomplete="off" minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]{3,20}">
+                        <small style="color: #666; font-size: 0.85em;">3-20 characters: letters, numbers, underscore only</small>
+                    </div>
+                    <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+                        <strong style="color: #856404;">⚠️ Warning:</strong>
+                        <p style="margin: 5px 0 0 0; color: #856404; font-size: 0.9em;">You will be logged out after changing your username. Please remember your new username for next login.</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" style="justify-content: center;">
+                        <i class="bi bi-person-check"></i> Change Username
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal-->
+    <div id="changePasswordModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🔒 Change Password</h2>
+                <div class="modal-actions-topright">
+                    <button class="icon-btn-cancel" onclick="closeModal('changePasswordModal')" title="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-content">
+                <form id="changePasswordForm" onsubmit="handleChangePassword(event)">
+                    <div class="form-group">
+                        <label for="changePasswordUsername">Username</label>
+                        <input type="text" id="changePasswordUsername" required readonly style="background: #f5f5f5; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label for="changePasswordCurrent">Current Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="changePasswordCurrent" required autocomplete="current-password" style="padding-right: 40px;">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('changePasswordCurrent', 'toggleCurrentPasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleCurrentPasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="changePasswordNew">New Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="changePasswordNew" required autocomplete="new-password" style="padding-right: 40px;" minlength="6">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('changePasswordNew', 'toggleNewPasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleNewPasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <small style="color: #666; font-size: 0.85em;">Minimum 6 characters</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="changePasswordConfirm">Confirm New Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="changePasswordConfirm" required autocomplete="new-password" style="padding-right: 40px;" minlength="6">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('changePasswordConfirm', 'toggleConfirmPasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleConfirmPasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" style="justify-content: center;">
+                        <i class="bi bi-shield-check"></i> Change Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay login-modal show">
+        <div class="modal login-modal-content">
+            <div class="modal-header">
+                <h2>🔬 Laboratory Login</h2>
+            </div>
+            <div class="modal-content">
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="loginPassword" required autocomplete="current-password" style="padding-right: 40px;">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('loginPassword', 'toggleLoginPasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleLoginPasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginSubject">Select Subject</label>
+                        <select id="loginSubject" required>
+                            <option value="">Choose Subject</option>
+                        </select>
+                    </div>
+                    <!-- NEW: Remember Me Checkbox -->
+                    <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                        <input type="checkbox" id="rememberMe" style="width: auto; cursor: pointer;">
+                        <label for="rememberMe" style="margin: 0; cursor: pointer;">Remember me for 30 days</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" style="justify-content: center;">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🔒 Change Password</h2>
+                <div class="modal-actions-topright">
+                    <button class="icon-btn-cancel" onclick="closeModal('changePasswordModal')" title="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-content">
+                <form id="changePasswordForm" onsubmit="handleChangePassword(event)">
+                    <div class="form-group">
+                        <label for="changePasswordUsername">Username</label>
+                        <input type="text" id="changePasswordUsername" required readonly style="background: #f5f5f5; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label for="changePasswordCurrent">Current Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="changePasswordCurrent" required autocomplete="current-password" style="padding-right: 40px;">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('changePasswordCurrent', 'toggleCurrentPasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleCurrentPasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="changePasswordNew">New Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="changePasswordNew" required autocomplete="new-password" style="padding-right: 40px;" minlength="6">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('changePasswordNew', 'toggleNewPasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleNewPasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <small style="color: #666; font-size: 0.85em;">Minimum 6 characters</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="changePasswordConfirm">Confirm New Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="changePasswordConfirm" required autocomplete="new-password" style="padding-right: 40px;" minlength="6">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('changePasswordConfirm', 'toggleConfirmPasswordIcon')" 
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 1.2em; color: #666;">
+                                <i id="toggleConfirmPasswordIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" style="justify-content: center;">
+                        <i class="bi bi-shield-check"></i> Change Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Item Price Manager Sidebar -->
+    <div id="itemPriceManagerSidebar" class="sidebar-overlay">
+        <div class="sidebar-panel">
+            <div class="sidebar-header">
+                <h2>💰 Item Price Manager</h2>
+                <button class="sidebar-close-btn" onclick="closeItemPriceManager()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="sidebar-content">
+                <div class="form-group">
+                    <label for="priceManagerSubject">Filter by Subject:</label>
+                    <select id="priceManagerSubject" onchange="filterItemsBySubject()">
+                        <option value="">All Subjects</option>
+                    </select>
+                </div>
+                
+                <div style="background: #f0f4ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <strong>📊 Statistics:</strong>
+                    <div style="margin-top: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div>Total: <strong id="totalItemsCount">0</strong></div>
+                        <div>Consumable: <strong id="consumableCount">0</strong></div>
+                        <div>Equipment: <strong id="equipmentCount">0</strong></div>
+                    </div>
+                </div>
+
+                <div id="itemsPriceList">
+                    <div class="no-items">Select a subject to view items</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h2>🧪 CCL Cost Estimator</h2>
+            <p class='subtitle'>Manage experiments and calculate procurement costs</p>
+            <div id="userInfo" style="margin-top: 10px; font-size: 0.9em; opacity: 0.9;">
+                <span id="currentUser"></span>
+                <button class="btn-logout" onclick="showAccountSettingsModal()" style="margin-left: 10px;">
+                    <i class="bi bi-gear"></i> Settings
+                </button>
+                <button class="burger-menu-btn" onclick="toggleItemPriceManager()" title="Manage Item Prices">
+                    <i class="bi bi-list"></i>
+                </button>
+                <button class="btn-logout" onclick="handleLogout()" style="margin-left: 10px;">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <!-- Left Panel - Experiments -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>
+                        Experiments
+                        <button class="add-btn" onclick="showAddExperimentModal()">
+                            + 
+                        </button>
+                    </h2>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-container">
+                    <!-- Master Filter - Subject -->
+                    <div class="master-filter">
+                        <label for="subjectFilter">Filter by Subject:</label>
+                        <select id="subjectFilter" onchange="filterBySubject()">
+                            <option value="">All Subjects</option>
+                        </select>
+                    </div>
+
+                    <!-- Secondary Filters - Category and Grade -->
+                    <div class="secondary-filters">
+                        <div class="filter-group">
+                            <label for="categoryFilter">Filter by Category:</label>
+                            <select id="categoryFilter" onchange="filterByCategory()">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="gradeFilter">Filter by Grade:</label>
+                            <select id="gradeFilter" onchange="filterByGrade()">
+                                <option value="">All Grades</option>
+                                <option value="6">Grade 6</option>
+                                <option value="7">Grade 7</option>
+                                <option value="8">Grade 8</option>
+                                <option value="9">Grade 9</option>
+                                <option value="10">Grade 10</option>
+                                <option value="11">Grade 11</option>
+                                <option value="12">Grade 12</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="reset-filters-container">
+                        <button class="btn btn-secondary reset-filters-btn w-100" onclick="resetFilters()">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+                        </button>
+                    </div>
+                </div>
+
+                <div id="experiments-list"></div>
+            </div>
+
+            <!-- Right Panel - Results -->
+            <div class="panel results-panel">
+                <h2>📊 Analysis</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="showPreviewModal()" style="flex: 1;">
+                        <i class="bi bi-eye"></i> Preview
+                    </button>
+                    <button class="btn btn-primary" onclick="exportToExcel()" style="flex: 1; background: #10b981;">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
+                    </button>
+                </div>
+
+                <div id="results-container">
+                    <div class="no-items">Select experiments to see analysis</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Experiment Modal -->
+    <div id="experimentModal" class="modal-overlay">
+        <div class="modal">
+            <!-- Header Bar - No margin, buttons side by side -->
+            <div class="modal-header">
+                <h2 id="experimentModalTitle">Add Experiment</h2>
+                <div class="modal-actions-topright">
+                    <button class="icon-btn-save" onclick="saveExperiment()" title="Save">✓</button>
+                    <button class="icon-btn-cancel" onclick="closeModal('experimentModal')" title="Cancel">✕</button>
+                </div>
+            </div>
+            
+            <!-- Scrollable Content -->
+            <div class="modal-content">
+                <div class="form-group">
+                    <label for="experimentName">Experiment Name</label>
+                    <input type="text" id="experimentName" placeholder="Enter experiment name">
+                </div>
+                <div class="form-group">
+                    <label for="experimentSubject">Subject</label>
+                    <select id="experimentSubject" onchange="updateCategoryDropdown()">
+                        <option value="">Select Subject</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="experimentCategory">Category</label>
+                    <input type="text" 
+                        id="experimentCategory" 
+                        list="categoriesList" 
+                        placeholder="Search or type new category"
+                        autocomplete="on">
+                    <datalist id="categoriesList"></datalist>
+                </div>
+
+                <div class="form-group">
+                    <label>Suitable for Grades</label>
+                    <div class="grade-selector">
+                        <div class="grade-checkbox" onclick="toggleGrade(6)">
+                            <input type="checkbox" id="grade6" value="6">
+                            <span>6</span>
+                        </div>
+                        <div class="grade-checkbox" onclick="toggleGrade(7)">
+                            <input type="checkbox" id="grade7" value="7">
+                            <span>7</span>
+                        </div>
+                        <div class="grade-checkbox" onclick="toggleGrade(8)">
+                            <input type="checkbox" id="grade8" value="8">
+                            <span>8</span>
+                        </div>
+                        <div class="grade-checkbox" onclick="toggleGrade(9)">
+                            <input type="checkbox" id="grade9" value="9">
+                            <span>9</span>
+                        </div>
+                        <div class="grade-checkbox" onclick="toggleGrade(10)">
+                            <input type="checkbox" id="grade10" value="10">
+                            <span>10</span>
+                        </div>
+                        <div class="grade-checkbox" onclick="toggleGrade(11)">
+                            <input type="checkbox" id="grade11" value="11">
+                            <span>11</span>
+                        </div>
+                        <div class="grade-checkbox" onclick="toggleGrade(12)">
+                            <input type="checkbox" id="grade12" value="12">
+                            <span>12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="experimentTrials">Number of Trials</label>
+                    <input type="number" id="experimentTrials" placeholder="1" min="1" max="999" value="1">
+                </div>
+
+                <!-- Items Section -->
+                <div class = "modal-items-container">
+                    <div class = "modal-items-header">
+                        <h3 style="margin: 0; font-size: 1.1em; color: #333;">Items</h3>
+                        <button class="btn btn-primary" onclick="addItemToModal()">
+                            +
+                        </button>
+                    </div>
+
+                    <div id="modalItemsList" style="margin-bottom: 15px;">
+                        <div class="no-items">No items added yet</div>
+                    </div>
+
+                    <table class="items-table" id="modalItemsTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Price (₹)</th>
+                                <th>Category</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalItemsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add/Edit Item Modal -->
+    <div id="itemModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="itemModalTitle">Add Item</h2>
+                <div class="modal-actions-topright">
+                    <button class="icon-btn icon-btn-save" onclick="saveItemHandler()" title="Save">✓</button>
+                    <button class="icon-btn icon-btn-cancel" onclick="closeModal('itemModal')" title="Cancel">✕</button>
+                </div>
+            </div>
+            
+            <div class="modal-content">
+                <div class="form-group">
+                    <label for="itemName">Item Name</label>
+                    <input type="text" 
+                        id="itemName" 
+                        list="itemsList" 
+                        placeholder="Search or type new item name"
+                        autocomplete="off">
+                    <datalist id="itemsList"></datalist>
+                </div>
+                <div class="form-group">
+                    <label for="itemQuantity">Quantity</label>
+                    <input type="number" id="itemQuantity" placeholder="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="itemUnit">Unit</label>
+                    <select id="itemUnit">
+                        <option value="ml">ml (milliliter)</option>
+                        <option value="g">g (gram)</option>
+                        <option value="mtr">mtr (meter)</option>
+                        <option value="pcs">pcs (pieces)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemPrice">Price/Unit (₹)</label>
+                    <input type="number" id="itemPrice" placeholder="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="itemCategory">Category</label>
+                    <select id="itemCategory">
+                        <option value="consumable">Consumable</option>
+                        <option value="non_consumable">Non-Consumable (Equipment)</option>
+                        <option value="packing">Packing Material</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="previewModal" class="modal-overlay">
+        <div class="modal" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2>📋 Procurement Preview</h2>
+                <div class="modal-actions-topright">
+                    <button class="icon-btn-cancel" onclick="closeModal('previewModal')" title="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-content" id="previewContent"></div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        function saveItemHandler() {
+            if (state.modalEditingItemIndex !== null) {
+                saveModalItem();
+            } else {
+                saveItem();
+            }
+        }
+
+    </script>
+</body>
+</html>
