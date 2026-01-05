@@ -1,0 +1,152 @@
+{
+  "EXP001": {
+    "id": "EXP001",
+    "name": "Coin Batteries",
+    "trials": 1,
+    "category": "CAT0001",
+    "grade": [
+      6,
+      7,
+      8,
+      12
+    ],
+    "items": [
+      {
+        "id": "ITM002",
+        "quantity": 4
+      },
+      {
+        "id": "ITM003",
+        "quantity": 4
+      },
+      {
+        "id": "ITM004",
+        "quantity": 2
+      },
+      {
+        "id": "ITM005",
+        "quantity": 1
+      },
+      {
+        "id": "ITM006",
+        "quantity": 1
+      },
+      {
+        "id": "ITM007",
+        "quantity": 30
+      },
+      {
+        "id": "ITM008",
+        "quantity": 2
+      },
+      {
+        "id": "ITM009",
+        "quantity": 40
+      },
+      {
+        "id": "ITM010",
+        "quantity": 1
+      },
+      {
+        "id": "ITM011",
+        "quantity": 1
+      },
+      {
+        "id": "ITM012",
+        "quantity": 1
+      },
+      {
+        "id": "ITM013",
+        "quantity": 1
+      }
+    ]
+  },
+  "EXP002": {
+    "id": "EXP002",
+    "name": "Rainbow Fizz",
+    "trials": 1,
+    "category": "CAT0002",
+    "grade": [
+      7,
+      10,
+      11
+    ],
+    "items": [
+      {
+        "id": "ITM001",
+        "quantity": 1.5
+      },
+      {
+        "id": "ITM014",
+        "quantity": 12
+      },
+      {
+        "id": "ITM015",
+        "quantity": 2
+      },
+      {
+        "id": "ITM016",
+        "quantity": 1
+      },
+      {
+        "id": "ITM017",
+        "quantity": 1
+      },
+      {
+        "id": "ITM018",
+        "quantity": 10
+      },
+      {
+        "id": "ITM009",
+        "quantity": 3
+      },
+      {
+        "id": "ITM013",
+        "quantity": 1
+      }
+    ]
+  },
+  "EXP003": {
+    "id": "EXP003",
+    "name": "Make Your Own Acid Base Indicator",
+    "trials": 1,
+    "category": "CAT0002",
+    "grade": [
+      6,
+      8,
+      10,
+      11
+    ],
+    "items": [
+      {
+        "id": "ITM012",
+        "quantity": 1
+      }
+    ]
+  },
+  "EXP004": {
+    "id": "EXP004",
+    "name": "Indicator Droplet",
+    "category": "CAT0002",
+    "trials": 1,
+    "grade": [
+      6,
+      8,
+      9
+    ],
+    "items": [
+      {
+        "id": "ITM012",
+        "quantity": 1
+      },
+      {
+        "id": "ITM013",
+        "quantity": 1
+      },
+      {
+        "id": "ITM014",
+        "quantity": 1
+      }
+    ]
+  }
+}

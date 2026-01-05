@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "password": "scrypt:32768:8:1$u5foXLM0s9s5tV5z$c9824c822350a4c17670b9985c31cec4a3e1e83e40ca3a52f6342c0d9f65c4c860e76fe9d0090c898df969860c09a230cf2cc159385b24c18942ef6f86d5db6b",
+    "subject": "All"
+  },
+  "bio_teacher": {
+    "password": "scrypt:32768:8:1$ra4JGljk6AzDM2XN$2c984495729e85851f4f05accb59207ea976877f7824d66fda12ab007a72b8ac04fcdc33e3146445e619f9d4b04d0840573f9f29d6fbf40416c011e1550c4425",
+    "subject": "Biology"
+  },
+  "Nisha": {
+    "password": "scrypt:32768:8:1$QJwzz0FOxBoODMIf$c801cb7e092a6d085d529f5f76648189f40e5d9a249bf80067cb3f8d22524777d4d304fc75736c5d76f834fc158efa22beedc1bfe3749d38abb6e268542f5b12",
+    "subject": "Chemistry"
+  },
+  "Biswajit": {
+    "password": "scrypt:32768:8:1$icPKOwwjfDPjlboF$a23502175b078d40e59fbde71968a844ce3af529c819ce9647a789600429c8820447005b78f610958b30652e07a5c7f3ac14add8f3677aaa5249aa65d9e58241",
+    "subject": "Physics"
+  }
+}

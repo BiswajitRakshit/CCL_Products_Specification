@@ -1,0 +1,29 @@
+{
+  "categories": [
+    {
+      "id": "CAT0001",
+      "subject": "Chemistry",
+      "name": "Electrochemistry"
+    },
+    {
+      "id": "CAT0002",
+      "subject": "Chemistry",
+      "name": "Acid-Base"
+    },
+    {
+      "id": "CAT0003",
+      "subject": "Chemistry",
+      "name": "Displacement Reactions"
+    },
+    {
+      "id": "CAT0004",
+      "subject": "Physics",
+      "name": "Normal Physics"
+    },
+    {
+      "id": "CAT0005",
+      "subject": "Biology",
+      "name": "Molecular Biology"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "items": [
+    {
+      "id": "ITM001",
+      "name": "Sodium Carbonate (Na2CO3)",
+      "price_per_unit": 2,
+      "unit": "g",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM002",
+      "name": "Copper Plate 3 cm x 3 cm x 0.30 mm",
+      "price_per_unit": 7.0,
+      "unit": "pcs",
+      "category": "non_consumable"
+    },
+    {
+      "id": "ITM003",
+      "name": "Zinc plates (3 cm x 3 cm x 0.30 mm)",
+      "price_per_unit": 4.5,
+      "unit": "pcs",
+      "category": "non_consumable"
+    },
+    {
+      "id": "ITM004",
+      "name": "Aluminium Foil A5 Size",
+      "price_per_unit": 2,
+      "unit": "pcs",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM005",
+      "name": "Corrugated Cardboard Sheet- 3PLY, A5 Size 2",
+      "price_per_unit": 4,
+      "unit": "pcs",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM006",
+      "name": "Plastic Beaker 50 mL",
+      "price_per_unit": 10,
+      "unit": "pcs",
+      "category": "non_consumable"
+    },
+    {
+      "id": "ITM007",
+      "name": "Vinegar",
+      "price_per_unit": 0.2,
+      "unit": "ml",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM008",
+      "name": "Common Salt (NaCl)",
+      "price_per_unit": 1.5,
+      "unit": "g",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM009",
+      "name": "DI water",
+      "price_per_unit": 1.66667,
+      "unit": "ml",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM010",
+      "name": "Green LED (5 mm)",
+      "price_per_unit": 2,
+      "unit": "pcs",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM011",
+      "name": "Red LED (5 mm)",
+      "price_per_unit": 2,
+      "unit": "pcs",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM012",
+      "name": "Scissors (Medium Size)",
+      "price_per_unit": 12,
+      "unit": "pcs",
+      "category": "non_consumable"
+    },
+    {
+      "id": "ITM013",
+      "name": "OUTER PACKING 6*9",
+      "price_per_unit": 4,
+      "unit": "pcs",
+      "category": "packing"
+    },
+    {
+      "id": "ITM014",
+      "name": "Acetic Acid 0.1 M",
+      "price_per_unit": 0.75,
+      "unit": "ml",
+      "category": "consumable"
+    },
+    {
+      "id": "ITM015",
+      "name": "Glass Test Tube 15 mm Dia. X 125 mm Length",
+      "price_per_unit": 8.0,
+      "unit": "pcs",
+      "category": "non_consumable"
+    },
+    {
+      "id": "ITM016",
+      "name": "Measuring Cylinder 10 ml",
+      "price_per_unit": 15,
+      "unit": "pcs",
+      "category": "non_consumable"
+    },
+    {
+      "id": "ITM017",
+      "name": "Micro steel Spatula 8 inch",
+      "price_per_unit": 24,
+      "unit": "pcs",
+      "category": "non_consumable"
+    },
+    {
+      "id": "ITM018",
+      "name": "Universal Indicator 10 mL",
+      "price_per_unit": 0.8,
+      "unit": "ml",
+      "category": "consumable"
+    }
+  ]
+}
