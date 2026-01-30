@@ -10,8 +10,8 @@ import json
 import os
 import secrets
 from datetime import timedelta
-# from waitress import serve
-from flask_cors import CORS
+from waitress import serve
+# from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))  # Use env variable in production
@@ -881,16 +881,17 @@ def get_user_allowed_subject(username):
 
 
 if __name__ == '__main__':
-    # serve(
-    #     app,
-    #     host="0.0.0.0", 
-    #     port=5000,
-    #     threads=4         
+    serve(
+        app,
+        host="0.0.0.0", 
+        port=5000,
+        threads=4         
 
-    # )
-    app.run(debug = True)
+    )
+    # app.run(debug = True)
 
 
-app = Flask(__name__)
-CORS(app)
+# app = Flask(__name__)
+# CORS(app)
+
 
